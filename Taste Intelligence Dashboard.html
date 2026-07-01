@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Common Plate · Taste Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#e7ddcb;font-family:'Public Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;color:#261c14}
+::selection{background:#e7c9b4}
+select{font-family:'Public Sans',sans-serif}
+button{cursor:pointer;font-family:'Public Sans',sans-serif}
+.scroll{scrollbar-width:thin;scrollbar-color:#cbbb9f transparent}
+.nav:hover{background:rgba(247,241,230,.08)!important}
+.dishrow:hover{background:#f3e7df!important}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.shell{display:flex;min-height:100vh;width:100%;background:#f3ece0}
+.side{width:248px;flex:none;background:#241a12;color:#e7ddcb;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;padding:26px 18px}
+.main{flex:1;min-width:0;height:100vh;overflow-y:auto}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px}
+.card{background:#fdfaf3;border:1px solid rgba(38,28,20,.08);border-radius:16px}
+@media(max-width:920px){.kpis{grid-template-columns:repeat(2,1fr)}.side{display:none}}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<aside class="side">
+<div style="display:flex;align-items:center;gap:10px;padding:0 8px 24px">
+<div style="width:32px;height:32px;border-radius:9px;background:#bf5a36;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:15px">C</div>
+<div style="font-weight:800;font-size:13.5px;line-height:1.15;letter-spacing:-.01em">Common Plate<br><span style="font-weight:600;color:#bcab90;font-size:11.5px">Taste Intelligence</span></div>
+</div>
+<nav id="nav" style="display:flex;flex-direction:column;gap:2px"></nav>
+<div style="margin-top:auto;padding:14px 12px 4px;border-top:1px solid rgba(231,221,203,.14)">
+<div style="display:flex;align-items:center;gap:8px;font-size:11.5px;color:#a8967c;margin-bottom:6px"><span style="width:7px;height:7px;border-radius:50%;background:#6b7d5b"></span>Extension · live</div>
+<div style="font-size:11px;line-height:1.5;color:#7d6d57">A one-tap taste rating after you order. Community-powered &amp; anonymous — we rank dishes, never people.</div>
+</div>
+</aside>
+
+<main class="main scroll">
+
+<div style="position:sticky;top:0;z-index:5;background:rgba(243,236,224,.92);backdrop-filter:blur(8px);border-bottom:1px solid rgba(38,28,20,.1);padding:18px 34px;display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap">
+<div>
+<div id="kicker" style="font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#bf5a36">Taste intelligence</div>
+<h1 id="title" style="font-family:'Newsreader',serif;font-weight:500;font-size:29px;margin:3px 0 0;letter-spacing:-.01em">—</h1>
+</div>
+<div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
+<label id="restWrap" style="display:flex;flex-direction:column;gap:4px;font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#8a7a64">Restaurant
+<select id="restSel" style="border:1px solid rgba(38,28,20,.16);background:#fdfaf3;border-radius:8px;padding:9px 12px;font-size:13px;font-weight:600;color:#261c14;min-width:190px"></select>
+</label>
+<label style="display:flex;flex-direction:column;gap:4px;font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#8a7a64">Sort by
+<select id="sortSel" style="border:1px solid rgba(38,28,20,.16);background:#fdfaf3;border-radius:8px;padding:9px 12px;font-size:13px;font-weight:600;color:#261c14">
+<option value="taste">Best tasted</option>
+<option value="reviews">Most reviewed</option>
+<option value="value">Best value</option>
+</select>
+</label>
+</div>
+</div>
+
+<div style="padding:26px 34px 48px">
+<div class="kpis" id="kpis"></div>
+<div id="body"></div>
+</div>
+
+</main>
+</div>
+
+<script>
+(function(){
+  var STORE='cp_taste_v1';
+  var sage='#6b7d5b', ochre='#cc9544', accent='#bf5a36', clay='#c87a4f';
+  var ATTRS=['Flavour','Portion','Value','Presentation','Freshness'];
+
+  // ---- community-sourced (illustrative) dataset ----
+  // dish: [name, taste, reviews, value, lovedFor[], quote]
+  var RESTAURANTS=[
+    {id:'saffron', name:'Saffron & Sage', cuisine:'Indian', dishes:[
+      ['Butter Chicken',4.8,312,4.4,['Rich & creamy','Perfectly spiced'],'Silky, deeply spiced and not too heavy — easily the best butter chicken near me.'],
+      ['Garlic Naan',4.7,280,4.6,['Fluffy','Fresh from the tandoor'],'Pillowy, charred just right and dripping with garlic butter.'],
+      ['Veg Samosa',4.6,210,4.7,['Crispy','Great value'],'Crunchy shell, generously filled and only a couple of quid for two.'],
+      ['Lamb Rogan Josh',4.5,190,4.2,['Tender','Bold flavour'],'Lamb falls apart and the sauce has real depth. Order extra rice.'],
+      ['Dal Makhani',4.4,170,4.5,['Comforting','Smooth'],'Slow-cooked and buttery — comfort in a bowl.'],
+      ['Paneer Tikka',4.3,150,4.1,['Smoky','Good portion'],'Lovely char on the paneer, though I wanted a touch more marinade.'],
+      ['Chicken Biryani',4.2,160,4.0,['Fragrant','Filling'],'Fragrant rice and plenty of it, but a few pieces were a little dry.']
+    ]},
+    {id:'trattoria', name:'La Trattoria', cuisine:'Italian', dishes:[
+      ['Tiramisu',4.8,240,4.3,['Indulgent','Just-right sweetness'],'Properly boozy, light as air and not drowned in cocoa. Faultless.'],
+      ['Truffle Tagliatelle',4.7,205,4.0,['Aromatic','Silky'],'The truffle actually tastes of truffle. Rich without being sickly.'],
+      ['Margherita Pizza',4.6,330,4.5,['Charred crust','Fresh basil'],'Blistered leopard crust, sweet sauce, proper fior di latte. Spot on.'],
+      ['Lasagne',4.5,180,4.4,['Hearty','Generous'],'Layers for days and a ragu that clearly simmered all day.'],
+      ['Carbonara',4.4,200,4.2,['Creamy','Peppery'],'Glossy and rich — no cream, just egg done right.'],
+      ['Bruschetta',4.2,140,4.3,['Fresh','Light'],'Bright and tomatoey, though the bread went a touch soggy.']
+    ]},
+    {id:'greenhouse', name:'The Greenhouse', cuisine:'Vegan & healthy', dishes:[
+      ['Mango Smoothie',4.7,160,4.4,['Refreshing','Not too sweet'],'Thick, fruity and genuinely refreshing — tastes like real mango.'],
+      ['Jackfruit Tacos',4.6,190,4.3,['Punchy','Surprising'],'Even my meat-eating mates were converted. Smoky and juicy.'],
+      ['Buddha Bowl',4.5,220,4.5,['Balanced','Filling'],'Loads of textures, properly filling and you feel great after.'],
+      ['Cauliflower Wings',4.4,175,4.2,['Crispy','Saucy'],'Crunchy coating and a good kick. Could use a bigger portion.'],
+      ['Beet Burger',4.3,150,4.1,['Meaty texture','Earthy'],'Holds together well and tastes of something — not a cardboard patty.']
+    ]},
+    {id:'koramen', name:'Kō Ramen', cuisine:'Japanese', dishes:[
+      ['Tonkotsu Ramen',4.8,290,4.2,['Deep broth','Comforting'],'18-hour broth you can taste. Egg perfectly jammy. I dream about this.'],
+      ['Karaage',4.7,210,4.5,['Crispy','Juicy'],'Shatteringly crisp outside, juicy inside, with a zingy mayo.'],
+      ['Gyoza',4.6,240,4.4,['Crispy bottoms','Great value'],'Lovely crispy skirts and a juicy filling. Six for a fiver — yes.'],
+      ['Spicy Miso Ramen',4.5,185,4.1,['Warming','Rich'],'Proper heat that builds. Noodles had a great bite.'],
+      ['Matcha Cheesecake',4.4,130,4.3,['Smooth','Subtle'],'Creamy with a gentle matcha bitterness. Not too sweet.']
+    ]},
+    {id:'smoke', name:'Smoke & Barrel', cuisine:'BBQ', dishes:[
+      ['Burnt Ends',4.8,205,4.0,['Melt-in-mouth','Smoky'],'Sticky, smoky cubes of heaven. Sold out fast for a reason.'],
+      ['Beef Brisket',4.7,260,4.1,['Tender','Perfect bark'],'Pull-apart tender with a peppery bark. The smoke ring is real.'],
+      ['Mac & Cheese',4.6,230,4.4,['Cheesy','Comforting'],'Three-cheese, crispy top, properly gooey underneath.'],
+      ['Pork Ribs',4.6,195,4.2,['Fall-off-bone','Saucy'],'Glazed, tender and messy in the best way.'],
+      ['Pulled Pork Bun',4.5,215,4.5,['Generous','Great value'],'Stuffed bun, tangy slaw, soft brioche. A proper feed for the price.'],
+      ['Cornbread',4.2,120,4.4,['Sweet','Moist'],'Buttery and just sweet enough. Wished it was a bigger slice.']
+    ]}
+  ];
+
+  function hash(s){var h=0;for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))&255;return h;}
+  function clamp(v){return Math.max(2.8,Math.min(5,v));}
+  // derive five attribute scores from taste + value + a per-dish jitter
+  function attrs(d){
+    var taste=d[1], value=d[3], j=(hash(d[0])%9-4)/40; // ±0.1
+    return {
+      'Flavour':clamp(taste),
+      'Portion':clamp(taste-0.25+ (hash(d[0]+'p')%7-3)/30),
+      'Value':clamp(value),
+      'Presentation':clamp(taste-0.15+ j),
+      'Freshness':clamp(taste-0.1+ (hash(d[0]+'f')%7-3)/30)
+    };
+  }
+  function dishObj(rest,d){
+    return {rest:rest.name, restId:rest.id, name:d[0], taste:d[1], reviews:d[2], value:d[3], lovedFor:d[4], quote:d[5], attrs:attrs(d)};
+  }
+  function scoreColor(v){return v>=4.6?sage:v>=4.3?ochre:accent;}
+  function fmtK(n){return n>=1000?(n/1000).toFixed(1)+'k':''+n;}
+
+  var S={tab:'dishes', rest:RESTAURANTS[0].id, sort:'taste', dish:null};
+  try{var raw=localStorage.getItem(STORE);if(raw){var p=JSON.parse(raw);S.tab=p.tab||S.tab;S.rest=p.rest||S.rest;S.sort=p.sort||S.sort;}}catch(e){}
+  function save(){try{localStorage.setItem(STORE,JSON.stringify({tab:S.tab,rest:S.rest,sort:S.sort}));}catch(e){}}
+
+  var TABS=[
+    {id:'dishes',label:'Dishes',kicker:'Per restaurant',title:'Best-tasted dishes'},
+    {id:'liked',label:'What people liked',kicker:'Why they loved it',title:'What people liked'},
+    {id:'leaderboard',label:'Leaderboard',kicker:'Across all restaurants',title:'Dish leaderboard'},
+    {id:'reviews',label:'Community reviews',kicker:'Voice of diners',title:'Community reviews'}
+  ];
+
+  var $=function(id){return document.getElementById(id);};
+  function curRest(){return RESTAURANTS.find(function(r){return r.id===S.rest;});}
+  function curDishes(){
+    var ds=curRest().dishes.map(function(d){return dishObj(curRest(),d);});
+    if(S.sort==='reviews')ds.sort(function(a,b){return b.reviews-a.reviews;});
+    else if(S.sort==='value')ds.sort(function(a,b){return b.value-a.value;});
+    else ds.sort(function(a,b){return b.taste-a.taste;});
+    return ds;
+  }
+  function allDishes(){
+    var out=[];RESTAURANTS.forEach(function(r){r.dishes.forEach(function(d){out.push(dishObj(r,d));});});
+    out.sort(function(a,b){return b.taste-a.taste||b.reviews-a.reviews;});
+    return out;
+  }
+
+  function renderNav(){
+    $('nav').innerHTML=TABS.map(function(t){
+      var on=S.tab===t.id;
+      return '<button class="nav" data-tab="'+t.id+'" style="display:flex;align-items:center;gap:11px;text-align:left;border:0;border-radius:9px;padding:11px 12px;font:600 13.5px \'Public Sans\';background:'+(on?'rgba(231,221,203,.12)':'transparent')+';color:'+(on?'#fff':'#bcab90')+';transition:background .15s">'+
+        '<span style="width:7px;height:7px;border-radius:50%;background:'+(on?accent:'rgba(231,221,203,.25)')+';flex:none"></span>'+t.label+'</button>';
+    }).join('');
+  }
+  function renderTopbar(){
+    $('restSel').innerHTML=RESTAURANTS.map(function(r){return '<option value="'+r.id+'"'+(r.id===S.rest?' selected':'')+'>'+r.name+' · '+r.cuisine+'</option>';}).join('');
+    $('sortSel').value=S.sort;
+    var t=TABS.find(function(x){return x.id===S.tab;});
+    $('kicker').textContent=t.kicker;
+    $('title').textContent=(S.tab==='dishes'||S.tab==='liked'||S.tab==='reviews')?t.title+' · '+curRest().name:t.title;
+    var perRest=(S.tab!=='leaderboard');
+    $('restWrap').style.opacity=perRest?'1':'.4';
+    $('restSel').disabled=!perRest;
+    $('sortSel').parentNode.style.display=(S.tab==='dishes')?'flex':'none';
+  }
+
+  function renderKpis(){
+    if(S.tab==='leaderboard'){
+      var ad=allDishes(), totR=ad.reduce(function(a,d){return a+d.reviews;},0);
+      kpiCards([
+        ['Dishes ranked',ad.length,'',accent,'across '+RESTAURANTS.length+' restaurants'],
+        ['Top dish',ad[0].name,'',sage,ad[0].rest],
+        ['Reviews collected',fmtK(totR),'','#261c14','community-submitted'],
+        ['Avg taste score',(ad.reduce(function(a,d){return a+d.taste*d.reviews;},0)/totR).toFixed(1),'/5',ochre,'review-weighted'],
+        ['Restaurants',RESTAURANTS.length,'','#261c14','live in your area']
+      ]);return;
+    }
+    var ds=curDishes(), totR=ds.reduce(function(a,d){return a+d.reviews;},0);
+    var avg=ds.reduce(function(a,d){return a+d.taste*d.reviews;},0)/totR;
+    var top=ds.slice().sort(function(a,b){return b.taste-a.taste;})[0];
+    var again=Math.round(avg/5*100*0.97);
+    kpiCards([
+      ['Overall taste',avg.toFixed(1),'/5',scoreColor(avg),'review-weighted mean'],
+      ['Dishes rated',ds.length,'',' #261c14','on the menu'],
+      ['Reviews collected',fmtK(totR),'','#261c14','via the extension'],
+      ['Would order again',again,'%',sage,'of reviewers'],
+      ['Best tasted',top.name,'',accent,top.taste.toFixed(1)+'/5 · '+top.reviews+' reviews']
+    ]);
+  }
+  function kpiCards(rows){
+    $('kpis').innerHTML=rows.map(function(k){
+      var big=String(k[1]).length>7;
+      return '<div class="card" style="padding:18px 18px 16px">'+
+        '<div style="font-size:11.5px;font-weight:600;color:#8a7a64;margin-bottom:10px">'+k[0]+'</div>'+
+        '<div style="display:flex;align-items:baseline;gap:5px"><span style="font:600 '+(big?'19px':'30px')+' \'Newsreader\',serif;color:'+k[3].trim()+';letter-spacing:-.01em;line-height:1.05">'+k[1]+'</span><span style="font-size:13px;color:#8a7a64">'+k[2]+'</span></div>'+
+        '<div style="font-size:11.5px;color:#6b5d4e;margin-top:6px">'+k[4]+'</div></div>';
+    }).join('');
+  }
+
+  function bar(label,val,max,col,right){
+    return '<div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span style="font-weight:600">'+label+'</span><span style="font-weight:700;color:'+col+'">'+(right||val.toFixed(1))+'</span></div>'+
+      '<div style="height:9px;border-radius:6px;background:#ece1cd;overflow:hidden"><div style="height:9px;border-radius:6px;background:'+col+';width:'+(val/max*100).toFixed(0)+'%;transform-origin:left;animation:grow .6s ease both"></div></div></div>';
+  }
+  function chip(t){return '<span style="font-size:11px;font-weight:600;color:#6b5d4e;background:#ece1cd;padding:4px 10px;border-radius:7px">'+t+'</span>';}
+
+  function renderBody(){
+    var el=$('body'); el.style.animation='none'; void el.offsetWidth; el.style.animation='rise .35s ease both';
+    if(S.tab==='dishes') return renderDishes();
+    if(S.tab==='liked') return renderLiked();
+    if(S.tab==='leaderboard') return renderLeaderboard();
+    if(S.tab==='reviews') return renderReviews();
+  }
+
+  function renderDishes(){
+    var ds=curDishes();
+    var list=ds.map(function(d,i){
+      var col=scoreColor(d.taste);
+      return '<button class="dishrow" data-dish="'+d.name+'" style="width:100%;display:grid;grid-template-columns:30px 1fr 120px 70px;align-items:center;gap:16px;text-align:left;border:0;background:transparent;border-radius:10px;padding:13px 12px;transition:background .15s">'+
+        '<span style="font:600 16px \'Newsreader\',serif;color:#bbac93">'+(i+1)+'</span>'+
+        '<span><span style="font-size:14.5px;font-weight:700;color:#261c14">'+d.name+'</span><span style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">'+d.lovedFor.map(chip).join('')+'</span></span>'+
+        '<span style="height:9px;border-radius:6px;background:#ece1cd;overflow:hidden;display:block"><span style="display:block;height:9px;border-radius:6px;background:'+col+';width:'+(d.taste/5*100)+'%"></span></span>'+
+        '<span style="text-align:right"><span style="font:600 17px \'Newsreader\',serif;color:'+col+'">'+d.taste.toFixed(1)+'</span><span style="display:block;font-size:11px;color:#8a7a64">'+d.reviews+' reviews</span></span>'+
+      '</button>';
+    }).join('');
+    $('body').innerHTML=
+      '<div style="display:grid;grid-template-columns:1.55fr 1fr;gap:18px">'+
+        '<div class="card" style="padding:22px 24px">'+
+          '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px"><h2 style="font:600 17px \'Public Sans\';margin:0">Best-tasted dishes</h2><span style="font-size:12px;color:#8a7a64">tap a dish for details</span></div>'+
+          '<div style="font-size:12px;color:#8a7a64;margin-bottom:14px">'+curRest().cuisine+' · ranked by '+(S.sort==='reviews'?'number of reviews':S.sort==='value'?'value for money':'taste score')+'</div>'+
+          list+
+        '</div>'+
+        '<div id="detail"></div>'+
+      '</div>';
+    if(!S.dish||!ds.find(function(d){return d.name===S.dish;}))S.dish=ds[0].name;
+    renderDetail();
+  }
+  function renderDetail(){
+    var d=curDishes().find(function(x){return x.name===S.dish;}); if(!d)return;
+    var col=scoreColor(d.taste);
+    var ab=ATTRS.map(function(a){return bar(a,d.attrs[a],5,scoreColor(d.attrs[a]));}).join('<div style="height:13px"></div>');
+    $('detail').innerHTML=
+      '<div class="card" style="padding:22px 24px;position:sticky;top:14px">'+
+        '<div style="font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:'+accent+';margin-bottom:6px">What people liked</div>'+
+        '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:4px"><h2 style="font:600 19px \'Public Sans\';margin:0">'+d.name+'</h2><span style="font:600 22px \'Newsreader\',serif;color:'+col+'">'+d.taste.toFixed(1)+'<span style="font-size:12px;color:#bbac93">/5</span></span></div>'+
+        '<div style="display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 18px">'+d.lovedFor.map(chip).join('')+'</div>'+
+        ab+
+        '<div style="margin-top:18px;border-left:3px solid '+col+';padding-left:13px"><div style="font-size:13.5px;line-height:1.5;color:#33271c">&ldquo;'+d.quote+'&rdquo;</div><div style="font-size:11px;color:#8a7a64;margin-top:6px">anonymous diner · via extension · '+d.reviews+' total reviews</div></div>'+
+      '</div>';
+  }
+
+  function renderLiked(){
+    var ds=curDishes();
+    // aggregate attribute averages across the restaurant (review-weighted)
+    var totR=ds.reduce(function(a,d){return a+d.reviews;},0);
+    var agg={};ATTRS.forEach(function(a){agg[a]=ds.reduce(function(s,d){return s+d.attrs[a]*d.reviews;},0)/totR;});
+    var order=ATTRS.slice().sort(function(a,b){return agg[b]-agg[a];});
+    var bars=order.map(function(a){return bar(a,agg[a],5,scoreColor(agg[a]));}).join('<div style="height:15px"></div>');
+    // tag cloud of lovedFor counts
+    var tags={};ds.forEach(function(d){d.lovedFor.forEach(function(t){tags[t]=(tags[t]||0)+1;});});
+    var tagArr=Object.keys(tags).sort(function(a,b){return tags[b]-tags[a];});
+    var cloud=tagArr.map(function(t){var sz=12+tags[t]*1.5;return '<span style="font-size:'+sz+'px;font-weight:700;color:#5b4f44;background:#ece1cd;padding:6px 13px;border-radius:9px">'+t+'</span>';}).join('');
+    var topQuotes=ds.slice().sort(function(a,b){return b.taste-a.taste;}).slice(0,3);
+    $('body').innerHTML=
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">'+
+        '<div class="card" style="padding:24px 26px">'+
+          '<h2 style="font:600 17px \'Public Sans\';margin:0 0 6px">What diners value here</h2>'+
+          '<div style="font-size:12px;color:#8a7a64;margin-bottom:20px">Review-weighted attribute scores across '+fmtK(totR)+' reviews · '+curRest().name+'</div>'+
+          bars+
+          '<div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(38,28,20,.1);font-size:12.5px;line-height:1.55;color:#6b5d4e"><strong style="color:#261c14">'+order[0]+'</strong> is what people praise most, while <strong style="color:#261c14">'+order[order.length-1]+'</strong> is the clearest thing to improve.</div>'+
+        '</div>'+
+        '<div style="display:flex;flex-direction:column;gap:18px">'+
+          '<div class="card" style="padding:24px 26px"><h2 style="font:600 16px \'Public Sans\';margin:0 0 16px">Loved for</h2><div style="display:flex;gap:9px;flex-wrap:wrap">'+cloud+'</div></div>'+
+          '<div style="background:#241a12;color:#e7ddcb;border-radius:16px;padding:22px 24px"><div style="font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:'+ochre+';margin-bottom:14px">In their words</div>'+
+            topQuotes.map(function(d){return '<div style="display:flex;gap:11px;margin-bottom:13px"><span style="width:7px;height:7px;border-radius:50%;background:'+sage+';margin-top:6px;flex:none"></span><div><div style="font-size:13px;line-height:1.5;color:#e7ddcb">&ldquo;'+d.quote+'&rdquo;</div><div style="font-size:11px;color:#a8967c;margin-top:3px">'+d.name+' · '+d.taste.toFixed(1)+'/5</div></div></div>';}).join('')+
+          '</div>'+
+        '</div>'+
+      '</div>';
+  }
+
+  function renderLeaderboard(){
+    var ad=allDishes().slice(0,18);
+    var rows=ad.map(function(d,i){
+      var col=scoreColor(d.taste);
+      return '<div style="display:grid;grid-template-columns:30px 1fr 150px 130px 70px;align-items:center;gap:16px;padding:13px 12px;border-radius:10px;background:'+(i%2?'transparent':'#f6efe3')+'">'+
+        '<span style="font:600 16px \'Newsreader\',serif;color:'+(i<3?accent:'#bbac93')+'">'+(i+1)+'</span>'+
+        '<span style="font-size:14.5px;font-weight:700;color:#261c14">'+d.name+'</span>'+
+        '<span style="font-size:12.5px;color:#6b5d4e">'+d.rest+'</span>'+
+        '<span style="height:9px;border-radius:6px;background:#ece1cd;overflow:hidden;display:block"><span style="display:block;height:9px;border-radius:6px;background:'+col+';width:'+(d.taste/5*100)+'%"></span></span>'+
+        '<span style="text-align:right"><span style="font:600 16px \'Newsreader\',serif;color:'+col+'">'+d.taste.toFixed(1)+'</span><span style="display:block;font-size:10.5px;color:#8a7a64">'+d.reviews+' rev.</span></span>'+
+      '</div>';
+    }).join('');
+    $('body').innerHTML='<div class="card" style="padding:24px 28px"><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px"><h2 style="font:600 17px \'Public Sans\';margin:0">Top dishes across every restaurant</h2><span style="font-size:12px;color:#8a7a64">ranked by community taste score</span></div><div style="font-size:12px;color:#8a7a64;margin-bottom:16px">The single best things to order in your area, wherever they are</div>'+rows+'</div>';
+  }
+
+  function renderReviews(){
+    var ds=curDishes();
+    // build review stream from dishes (one per dish, plus sentiment from taste)
+    var revs=ds.map(function(d){
+      var s=d.taste>=4.6?'Loved it':d.taste>=4.3?'Liked it':'Mixed';
+      var col=d.taste>=4.6?sage:d.taste>=4.3?ochre:accent;
+      var chipBg=d.taste>=4.6?'#eef0e6':d.taste>=4.3?'#f6eed9':'#f6e7df';
+      return {dish:d.name,quote:d.quote,rating:d.taste,tags:d.lovedFor,s:s,col:col,chipBg:chipBg};
+    });
+    // sentiment summary
+    var pos=ds.filter(function(d){return d.taste>=4.6;}).length, mid=ds.filter(function(d){return d.taste>=4.3&&d.taste<4.6;}).length, low=ds.length-pos-mid;
+    var tot=ds.length||1;
+    var sent=[['Loved it',pos,sage],['Liked it',mid,ochre],['Mixed',low,accent]];
+    $('body').innerHTML=
+      '<div style="display:grid;grid-template-columns:240px 1fr;gap:18px;align-items:start">'+
+        '<div class="card" style="padding:22px 22px;position:sticky;top:14px"><h2 style="font:600 16px \'Public Sans\';margin:0 0 16px">Sentiment</h2>'+
+          sent.map(function(x){return '<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span style="display:flex;align-items:center;gap:7px"><span style="width:8px;height:8px;border-radius:50%;background:'+x[2]+'"></span>'+x[0]+'</span><span style="font-weight:700">'+Math.round(x[1]/tot*100)+'%</span></div><div style="height:7px;border-radius:5px;background:#ece1cd;overflow:hidden"><div style="height:7px;border-radius:5px;background:'+x[2]+';width:'+Math.round(x[1]/tot*100)+'%"></div></div></div>';}).join('')+
+          '<div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(38,28,20,.1);font-size:11.5px;line-height:1.55;color:#8a7a64">Reviews are submitted anonymously through the extension and screened before they appear.</div>'+
+        '</div>'+
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">'+
+          revs.map(function(r){return '<div class="card" style="padding:18px 20px">'+
+            '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span style="font-size:11px;font-weight:700;color:'+r.col+';background:'+r.chipBg+';padding:4px 10px;border-radius:999px">'+r.s+'</span><span style="font:600 13px \'Newsreader\',serif;color:#261c14">'+r.rating.toFixed(1)+'<span style="color:#bbac93;font-size:11px">/5</span></span></div>'+
+            '<div style="font-size:12.5px;font-weight:700;color:#8a6a4a;margin-bottom:6px">'+r.dish+'</div>'+
+            '<div style="font-size:13.5px;line-height:1.55;color:#33271c">&ldquo;'+r.quote+'&rdquo;</div>'+
+            '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:11px">'+r.tags.map(chip).join('')+'</div>'+
+          '</div>';}).join('')+
+        '</div>'+
+      '</div>';
+  }
+
+  function renderAll(){renderNav();renderTopbar();renderKpis();renderBody();}
+
+  $('nav').addEventListener('click',function(e){var b=e.target.closest('[data-tab]');if(!b)return;S.tab=b.getAttribute('data-tab');save();renderAll();});
+  $('restSel').addEventListener('change',function(e){S.rest=e.target.value;S.dish=null;save();renderAll();});
+  $('sortSel').addEventListener('change',function(e){S.sort=e.target.value;save();renderKpis();renderBody();});
+  $('body').addEventListener('click',function(e){var b=e.target.closest('[data-dish]');if(!b)return;S.dish=b.getAttribute('data-dish');renderDetail();});
+
+  renderAll();
+})();
+</script>
+</body>
+</html>

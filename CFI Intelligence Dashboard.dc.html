@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#e7ddcb;font-family:'Public Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;color:#261c14}
+::selection{background:#e7c9b4}
+.cfi-scroll{scrollbar-width:thin;scrollbar-color:#cbbb9f transparent}
+.cfi-nav:hover{background:rgba(247,241,230,.08)}
+select{font-family:'Public Sans',sans-serif}
+@keyframes cfiRise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes cfiGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+</style>
+</helmet>
+
+<div style="display:flex;min-height:100vh;width:100%;background:#f3ece0">
+
+<!-- ============ SIDEBAR ============ -->
+<aside style="width:248px;flex:none;background:#241a12;color:#e7ddcb;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;padding:26px 18px">
+<div style="display:flex;align-items:center;gap:10px;padding:0 8px 26px">
+<div style="width:32px;height:32px;border-radius:9px;background:{{ accent }};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:15px">C</div>
+<div style="font-weight:800;font-size:14px;line-height:1.1;letter-spacing:-.01em">{{ orgName }}</div>
+</div>
+
+<nav style="display:flex;flex-direction:column;gap:2px">
+<sc-for list="{{ navItems }}" as="item" hint-placeholder-count="6">
+<button class="cfi-nav" onClick="{{ item.onClick }}" style="display:flex;align-items:center;gap:11px;text-align:left;border:0;cursor:pointer;border-radius:9px;padding:11px 12px;font:600 13.5px 'Public Sans',sans-serif;background:{{ item.bg }};color:{{ item.fg }};transition:background .15s">
+<span style="width:7px;height:7px;border-radius:50%;background:{{ item.dot }};flex:none"></span>{{ item.label }}
+</button>
+</sc-for>
+</nav>
+
+<div style="margin-top:auto;padding:14px 12px 4px;border-top:1px solid rgba(231,221,203,.14)">
+<div style="display:flex;align-items:center;gap:8px;font-size:11.5px;color:#a8967c;margin-bottom:6px">
+<span style="width:7px;height:7px;border-radius:50%;background:#6b7d5b"></span>Anonymous &middot; aggregated
+</div>
+<div style="font-size:11px;line-height:1.5;color:#7d6d57">No personal data. Feedback is screened and tied to a setting, never a person.</div>
+</div>
+</aside>
+
+<!-- ============ MAIN ============ -->
+<main class="cfi-scroll" style="flex:1;min-width:0;height:100vh;overflow-y:auto">
+
+<!-- top bar / filters -->
+<div style="position:sticky;top:0;z-index:5;background:rgba(243,236,224,.92);backdrop-filter:blur(8px);border-bottom:1px solid rgba(38,28,20,.1);padding:18px 34px;display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap">
+<div>
+<div style="font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:{{ accent }}">{{ activeTabKicker }}</div>
+<h1 style="font-family:'Newsreader',serif;font-weight:500;font-size:29px;margin:3px 0 0;letter-spacing:-.01em">{{ activeTabTitle }}</h1>
+</div>
+<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+<label style="display:flex;flex-direction:column;gap:4px;font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#8a7a64">Region
+<select value="{{ activeRegion }}" onChange="{{ onRegionChange }}" style="border:1px solid rgba(38,28,20,.16);background:#fdfaf3;border-radius:8px;padding:9px 12px;font-size:13px;font-weight:600;color:#261c14;min-width:178px">
+<option value="all">All regions</option>
+<sc-for list="{{ regionOptions }}" as="r" hint-placeholder-count="5"><option value="{{ r.id }}">{{ r.name }}</option></sc-for>
+</select>
+</label>
+<label style="display:flex;flex-direction:column;gap:4px;font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#8a7a64">Period
+<select value="{{ activeRange }}" onChange="{{ onRangeChange }}" style="border:1px solid rgba(38,28,20,.16);background:#fdfaf3;border-radius:8px;padding:9px 12px;font-size:13px;font-weight:600;color:#261c14">
+<option value="2">Last 2 quarters</option>
+<option value="4">Last 4 quarters</option>
+<option value="6">Last 6 quarters</option>
+</select>
+</label>
+</div>
+</div>
+
+<div style="padding:26px 34px 48px">
+
+<!-- ===== KPI ROW (all tabs) ===== -->
+<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px">
+<sc-for list="{{ kpis }}" as="k" hint-placeholder-count="5">
+<div style="background:#fdfaf3;border:1px solid rgba(38,28,20,.08);border-radius:14px;padding:18px 18px 16px">
+<div style="font-size:11.5px;font-weight:600;color:#8a7a64;margin-bottom:10px">{{ k.label }}</div>
+<div style="display:flex;align-items:baseline;gap:5px"><span style="font:600 30px 'Newsreader',serif;color:{{ k.color }};letter-spacing:-.01em">{{ k.value }}</span><span style="font-size:13px;color:#8a7a64">{{ k.unit }}</span></div>
+<div style="font-size:11.5px;color:#6b5d4e;margin-top:6px">{{ k.sub }}</div>
+</div>
+</sc-for>
+</div>
+
+<!-- ============================= OVERVIEW ============================= -->
+<sc-if value="{{ isOverview }}" hint-placeholder-val="{{ true }}">
+<div style="display:grid;grid-template-columns:1.5fr 1fr;gap:18px;margin-bottom:18px">
+<!-- trend -->
+<div style="background:#fdfaf3;border:1px solid rgba(38,28,20,.08);border-radius:16px;padding:24px 26px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
+<h2 style="font:600 17px 'Public Sans',sans-serif;margin:0">Satisfaction trend</h2>
+<div style="font-size:12.5px;font-weight:600;color:{{ trend.deltaColor }}">{{ trend.delta }} over period</div>
+</div>
+<div style="font-size:12px;color:#8a7a64;margin-bottom:14px">Average overall rating, by quarter &middot; {{ regionLabel }}</div>
+<svg viewBox="0 0 640 210" style="width:100%;height:auto;display:block">
+<defs><linearGradient id="cfiArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="{{ accent }}" stop-opacity="0.22"/><stop offset="100%" stop-color="{{ accent }}" stop-opacity="0"/></linearGradient></defs>
+<path d="{{ trend.area }}" fill="url(#cfiArea)"></path>
+<polyline points="{{ trend.points }}" fill="none" stroke="{{ accent }}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"></polyline>
+</svg>
+<div style="display:flex;justify-content:space-between;margin-top:6px">
+<sc-for list="{{ trend.labels }}" as="l" hint-placeholder-count="6"><span style="font:500 10.5px ui-monospace,monospace;color:#a08e74">{{ l }}</span></sc-for>
+</div>
+</div>
+<!-- top insights -->
+<div style="background:#241a12;color:#e7ddcb;border-radius:16px;padding:22px 24px">
+<h2 style="font:600 16px 'Public Sans',sans-serif;margin:0 0 14px;color:#fff">Auto-generated insights</h2>
+<div style="display:flex;flex-direction:column;gap:13px">
+<sc-for list="{{ insights }}" as="ins" hint-placeholder-count="3">
+<div style="display:flex;gap:11px">
+<span style="width:7px;height:7px;border-radius:50%;background:{{ ins.color }};margin-top:6px;flex:none"></span>
+<div><div style="font-size:13.5px;font-weight:700;color:#fff;margin-bottom:2px">{{ ins.title }}</div><div style="font-size:12.5px;line-height:1.5;color:#b6a489">{{ ins.body }}</div></div>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+<!-- ratings + recent feedback -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+<div style="background:#fdfaf3;border:1px solid rgba(38,28,20,.08);border-radius:16px;padding:24px 26px">
+<h2 style="font:600 17px 'Public Sans',sans-serif;margin:0 0 18px">Rating by dimension</h2>
+<div style="display:flex;flex-direction:column;gap:15px">
+<sc-for list="{{ ratings }}" as="r" hint-placeholder-count="5">
+<div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span>{{ r.label }}</span><span style="font-weight:700">{{ r.value }}</span></div>
+<div style="height:8px;border-radius:6px;background:#ece1cd;overflow:hidden"><div style="height:8px;border-radius:6px;background:{{ r.color }};width:{{ r.pct }};transform-origin:left;animation:cfiGrow .6s ease both"></div></div></div>
+</sc-for>
+</div>
+</div>
+<div style="background:#fdfaf3;border:1px solid rgba(38,28,20,.08);border-radius:16px;padding:24px 26px">
+<h2 style="font:600 17px 'Public Sans',sans-serif;margin:0 0 16px">Recent anonymous feedback</h2>
+<div style="display:flex;flex-direction:column;gap:13px">
+<sc-for list="{{ feedbackTop }}" as="f" hint-placeholder-count="3">
+<div style="border-left:3px solid {{ f.color }};padding-left:13px">
+<div style="font-size:13.5px;line-height:1.5;color:#33271c">&ldquo;{{ f.quote }}&rdquo;</div>
+<div style="font-size:11px;color:#8a7a64;margin-top:5px">{{ f.meta }}</div>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+</sc-if>
+
+<!-- ============================= QUALITY ============================= -->
+<sc-if value="{{ isQuality }}" hint-placeholder-val="{{ true }}">
+<div style="display:grid;grid-template-columns:1.4fr 1fr;gap:18px">
+<div style="background:#fdfaf3;border:1px solid rgba(38,28,20,.08);border-radius:16px;padding:24px 28px">
+<h2 style="font:600 17px 'Public Sans',sans-serif;margin:0 0 6px">Meal quality, by dimension</h2>
+<div style="font-size:12px;color:#8a7a64;margin-bottom:22px">Mean score 0&ndash;5 across {{ responsesLabel }} screened responses &middot; {{ regionLabel }}</div>
+<div style="display:flex;flex-direction:column;gap:20px">
+<sc-for list="{{ ratings }}" as="r" hint-placeholder-count="5">
+<div><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px"><span style="font-size:14px;font-weight:600">{{ r.label }}</span><span style="font:600 18px 'Newsreader',serif;color:{{ r.color }}">{{ r.value }}</span></div>
+<div style="height:10px;border-radius:6px;background:#ece1cd;overflow:hidden"><div style="height:10px;border-radius:6px;background:{{ r.color }};width:{{ r.pct }};transform-origin:left;animation:cfiGrow .6s ease both"></div></div>
+<div style="font-size:11.5px;color:#8a7a64;margin-top:5px">{{ r.note }}</div></div>
+</sc-for>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:18px">
+<div style="background:#eef0e6;border:1px solid rgba(75,94,66,.2);border-radius:16px;padding:22px 24px">
+<div style="font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#4f5e42;margin-bottom:8px">Strength</div>
+<div style="font:600 17px 'Public Sans',sans-serif;margin-bottom:6px">{{ quality.best }}</div>
+<div style="font-size:13px;line-height:1.55;color:#5b4f44">{{ quality.bestNote }}</div>
+</div>
+<div style="background:#f6e7df;border:1px solid rgba(191,90,54,.22);border-radius:16px;padding:22px 24px">
+<div style="font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:{{ accent }};margin-bottom:8px">Watch</div>
+<div style="font:600 17px 'Public Sans',sans-serif;margin-bottom:6px">{{ quality.worst }}</div>
+<div style="font-size:13px;line-height:1.55;color:#5b4f44">{{ quality.worstNote }}</div>
+</div>
+</div>
+</div>
+</sc-if>
+
+<!-- ====================== WASTE & NUTRITION ====================== -->
+<sc-if value="{{ isWaste }}" hint-placeholder-val="{{ true }}">
+<div style="display:grid;grid-template-columns:1.2fr 1fr;gap:18px">
+<div style="background:#fdfaf3;border:1px solid rgba(38,28,20,.08);border-radius:16px;padding:24px 28px">
+<h2 style="font:600 17px 'Public Sans',sans-serif;margin:0 0 6px">Avoidable waste, by category</h2>
+<div style="font-size:12px;color:#8a7a64;margin-bottom:22px">Share of reported uneaten / discarded food &middot; {{ regionLabel }}</div>
+<div style="display:flex;flex-direction:column;gap:17px">
+<sc-for list="{{ waste }}" as="w" hint-placeholder-count="5">
+<div><div style="display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:5px"><span style="font-weight:600">{{ w.label }}</span><span style="font-weight:700;color:{{ w.color }}">{{ w.value }}%</span></div>
+<div style="height:9px;border-radius:6px;background:#ece1cd;overflow:hidden"><div style="height:9px;border-radius:6px;background:{{ w.color }};width:{{ w.pct }};transform-origin:left;animation:cfiGrow .6s ease both"></div></div></div>
+</sc-for>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:14px">
+<div style="background:#fdfaf3;border:1px solid rgba(38,28,20,.08);border-radius:16px;padding:22px 24px">
+<h2 style="font:600 16px 'Public Sans',sans-serif;margin:0 0 16px">Nutritional trends</h2>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+<sc-for list="{{ nutrition }}" as="n" hint-placeholder-count="3">
+<div style="background:#f3ece0;border-radius:12px;padding:15px 14px"><div style="font:600 26px 'Newsreader',serif;color:{{ n.color }}">{{ n.value }}</div><div style="font-size:11px;color:#6b5d4e;line-height:1.35;margin-top:4px">{{ n.label }}</div></div>
+</sc-for>
+</div>
+</div>
+<div style="background:#241a12;color:#e7ddcb;border-radius:16px;padding:22px 24px">
+<div style="font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:{{ accent }};margin-bottom:8px">Insight</div>
+<div style="font-size:14px;line-height:1.55;color:#e7ddcb">{{ wasteInsight }}</div>
+</div>
+</div>
+</div>
+</sc-if>
+
+<!-- ============================= GEOGRAPHY ============================= -->
+<sc-if value="{{ isGeo }}" hint-placeholder-val="{{ true }}">
+<div style="background:#fdfaf3;border:1px solid rgba(38,28,20,.08);border-radius:16px;padding:24px 28px">
+<h2 style="font:600 17px 'Public Sans',sans-serif;margin:0 0 6px">Geographic patterns</h2>
+<div style="font-size:12px;color:#8a7a64;margin-bottom:20px">Satisfaction and reach by region &middot; click a region to filter the whole dashboard</div>
+<div style="display:flex;flex-direction:column;gap:4px">
+<sc-for list="{{ geography }}" as="g" hint-placeholder-count="5">
+<button onClick="{{ g.onClick }}" style="display:grid;grid-template-columns:200px 1fr 88px 96px;align-items:center;gap:18px;text-align:left;border:0;cursor:pointer;border-radius:10px;padding:14px 14px;background:{{ g.bg }};transition:background .15s">
+<span style="font-size:14px;font-weight:700;color:#261c14">{{ g.name }}</span>
+<span style="height:9px;border-radius:6px;background:#ece1cd;overflow:hidden;display:block"><span style="display:block;height:9px;border-radius:6px;background:{{ g.color }};width:{{ g.pct }}"></span></span>
+<span style="font:600 16px 'Newsreader',serif;color:{{ g.color }};text-align:right">{{ g.satisfaction }}</span>
+<span style="font-size:12px;color:#6b5d4e;text-align:right">{{ g.responses }} resp.</span>
+</button>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<!-- ============================= FEEDBACK ============================= -->
+<sc-if value="{{ isFeedback }}" hint-placeholder-val="{{ true }}">
+<div style="display:grid;grid-template-columns:240px 1fr;gap:18px;align-items:start">
+<div style="background:#fdfaf3;border:1px solid rgba(38,28,20,.08);border-radius:16px;padding:22px 22px;position:sticky;top:14px">
+<h2 style="font:600 16px 'Public Sans',sans-serif;margin:0 0 16px">Sentiment</h2>
+<div style="display:flex;flex-direction:column;gap:12px">
+<sc-for list="{{ sentimentSummary }}" as="s" hint-placeholder-count="3">
+<div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span style="display:flex;align-items:center;gap:7px"><span style="width:8px;height:8px;border-radius:50%;background:{{ s.color }}"></span>{{ s.label }}</span><span style="font-weight:700">{{ s.value }}%</span></div>
+<div style="height:7px;border-radius:5px;background:#ece1cd;overflow:hidden"><div style="height:7px;border-radius:5px;background:{{ s.color }};width:{{ s.pct }}"></div></div></div>
+</sc-for>
+</div>
+<div style="margin-top:18px;padding-top:16px;border-top:1px solid rgba(38,28,20,.1);font-size:11.5px;line-height:1.55;color:#8a7a64">Every comment is anonymised and machine-screened for abusive or identifying content before it reaches a dashboard.</div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+<sc-for list="{{ feedback }}" as="f" hint-placeholder-count="8">
+<div style="background:#fdfaf3;border:1px solid rgba(38,28,20,.08);border-radius:14px;padding:18px 20px">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+<span style="display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:{{ f.color }};background:{{ f.chipBg }};padding:4px 10px;border-radius:999px">{{ f.sentiment }}</span>
+<span style="font:600 13px 'Newsreader',serif;color:#261c14">{{ f.rating }}<span style="color:#bbac93;font-size:11px">/5</span></span>
+</div>
+<div style="font-size:13.5px;line-height:1.55;color:#33271c">&ldquo;{{ f.quote }}&rdquo;</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:11px">
+<sc-for list="{{ f.tags }}" as="t" hint-placeholder-count="2"><span style="font-size:10.5px;font-weight:600;color:#6b5d4e;background:#ece1cd;padding:3px 9px;border-radius:6px">{{ t }}</span></sc-for>
+</div>
+<div style="font-size:11px;color:#8a7a64;margin-top:10px">{{ f.meta }}</div>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<!-- ============================= GROWTH ============================= -->
+<sc-if value="{{ isGrowth }}" hint-placeholder-val="{{ true }}">
+<div style="background:#fdfaf3;border:1px solid rgba(38,28,20,.08);border-radius:16px;padding:24px 28px;margin-bottom:18px">
+<h2 style="font:600 17px 'Public Sans',sans-serif;margin:0 0 6px">Scaling pipeline</h2>
+<div style="font-size:12px;color:#8a7a64;margin-bottom:22px">Land-and-expand: prove value on a few sites, then grow into whole council areas, regions, and beyond</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<sc-for list="{{ funnel }}" as="s" hint-placeholder-count="5">
+<div style="display:flex;align-items:center;gap:16px">
+<div style="width:{{ s.pct }};min-width:230px;background:{{ s.color }};border-radius:10px;padding:15px 18px;color:{{ s.fg }};transition:width .5s">
+<div style="display:flex;justify-content:space-between;align-items:baseline;gap:14px"><span style="font-weight:800;font-size:14.5px">{{ s.name }}</span><span style="font-weight:700;font-size:13px;opacity:.85">{{ s.sites }} sites</span></div>
+<div style="font-size:11.5px;opacity:.8;margin-top:3px">{{ s.detail }}</div>
+</div>
+<span style="font-size:12.5px;color:#8a7a64;white-space:nowrap">{{ s.responses }} responses</span>
+</div>
+</sc-for>
+</div>
+</div>
+<div style="display:grid;grid-template-columns:1.3fr 1fr;gap:18px">
+<div style="background:#fdfaf3;border:1px solid rgba(38,28,20,.08);border-radius:16px;padding:24px 28px">
+<h2 style="font:600 17px 'Public Sans',sans-serif;margin:0 0 18px">Scalable acquisition channels</h2>
+<div style="display:flex;flex-direction:column;gap:14px">
+<sc-for list="{{ channels }}" as="c" hint-placeholder-count="4">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:18px;padding:15px 16px;background:#f3ece0;border-radius:12px">
+<div><div style="font-size:14px;font-weight:700;margin-bottom:3px">{{ c.name }}</div><div style="font-size:12px;line-height:1.45;color:#6b5d4e">{{ c.technique }}</div></div>
+<div style="text-align:right;flex:none"><div style="font:600 22px 'Newsreader',serif;color:{{ accent }}">{{ c.metric }}</div><div style="font-size:10.5px;color:#8a7a64">{{ c.metricLabel }}</div></div>
+</div>
+</sc-for>
+</div>
+</div>
+<div style="background:#241a12;color:#e7ddcb;border-radius:16px;padding:24px 26px">
+<h2 style="font:600 16px 'Public Sans',sans-serif;margin:0 0 16px;color:#fff">Growth playbook</h2>
+<div style="display:flex;flex-direction:column;gap:13px">
+<sc-for list="{{ playbook }}" as="p" hint-placeholder-count="5">
+<div style="display:flex;gap:11px"><span style="font:700 12px ui-monospace,monospace;color:{{ accent }};flex:none;margin-top:1px">{{ p.num }}</span><div style="font-size:13px;line-height:1.5;color:#cdbca2">{{ p.text }}</div></div>
+</sc-for>
+</div>
+</div>
+</div>
+</sc-if>
+
+</div>
+</main>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:860},&quot;accentColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#bf5a36&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#bf5a36&quot;,&quot;#a8552b&quot;,&quot;#6b7d5b&quot;,&quot;#b06a2c&quot;]},&quot;orgName&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Community Food Intelligence&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;showProjected&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Growth&quot;}}">
+class Component extends DCLogic {
+  state = { tab: 'overview', region: 'all', range: 6 };
+
+  // ---------- anonymous synthetic dataset ----------
+  data() {
+    return [
+      { id:'gm', name:'Greater Manchester', sites:34, responses:4820, satisfaction:4.4, repeat:78, wasteChange:-18,
+        ratings:{Taste:4.2,Freshness:4.5,'Portion size':4.0,Packaging:3.8,'Meal temperature':4.1},
+        waste:{'Prepared meals':31,'Bread & bakery':24,'Fresh produce':19,Dairy:14,Ambient:12},
+        nutrition:{balanced:68,fruitveg:2.4,salt:12},
+        trend:[4.00,4.05,4.10,4.20,4.30,4.40] },
+      { id:'nw', name:'North West', sites:58, responses:7310, satisfaction:4.2, repeat:74, wasteChange:-15,
+        ratings:{Taste:4.1,Freshness:4.3,'Portion size':3.9,Packaging:3.7,'Meal temperature':4.0},
+        waste:{'Prepared meals':34,'Bread & bakery':22,'Fresh produce':20,Dairy:13,Ambient:11},
+        nutrition:{balanced:64,fruitveg:2.2,salt:9},
+        trend:[3.95,4.00,4.05,4.10,4.15,4.20] },
+      { id:'wm', name:'West Midlands', sites:41, responses:5140, satisfaction:4.1, repeat:71, wasteChange:-12,
+        ratings:{Taste:4.0,Freshness:4.2,'Portion size':3.8,Packaging:3.6,'Meal temperature':3.9},
+        waste:{'Prepared meals':33,'Bread & bakery':23,'Fresh produce':21,Dairy:12,Ambient:11},
+        nutrition:{balanced:61,fruitveg:2.1,salt:8},
+        trend:[3.90,3.95,4.00,4.00,4.05,4.10] },
+      { id:'ldn', name:'Greater London', sites:72, responses:9450, satisfaction:4.3, repeat:80, wasteChange:-21,
+        ratings:{Taste:4.3,Freshness:4.4,'Portion size':4.1,Packaging:3.9,'Meal temperature':4.2},
+        waste:{'Prepared meals':29,'Bread & bakery':25,'Fresh produce':18,Dairy:15,Ambient:13},
+        nutrition:{balanced:70,fruitveg:2.5,salt:14},
+        trend:[4.05,4.10,4.15,4.20,4.25,4.30] },
+      { id:'yh', name:'Yorkshire & Humber', sites:38, responses:4560, satisfaction:4.0, repeat:69, wasteChange:-10,
+        ratings:{Taste:4.0,Freshness:4.1,'Portion size':3.8,Packaging:3.5,'Meal temperature':3.8},
+        waste:{'Prepared meals':35,'Bread & bakery':21,'Fresh produce':22,Dairy:11,Ambient:11},
+        nutrition:{balanced:59,fruitveg:2.0,salt:7},
+        trend:[3.85,3.90,3.90,3.95,4.00,4.00] },
+    ];
+  }
+
+  feedbackData() {
+    return [
+      { id:1, region:'gm', site:'Community kitchen', rating:5, s:'positive', tags:['Taste','Warmth'], quote:'Hot, filling and genuinely tasty. The volunteers always make sure nobody leaves hungry.' },
+      { id:2, region:'gm', site:'Food bank', rating:3, s:'neutral', tags:['Packaging'], quote:'Good food but some of the packaging was hard to open and a couple of tins had no labels.' },
+      { id:3, region:'nw', site:'Pantry', rating:5, s:'positive', tags:['Freshness','Choice'], quote:'Lovely fresh veg this week and more choice than last month. Made a proper family meal from it.' },
+      { id:4, region:'ldn', site:'Community café', rating:2, s:'critical', tags:['Temperature'], quote:'The meal had gone lukewarm by the time I sat down. Tasted fine but I would have liked it hot.' },
+      { id:5, region:'wm', site:'School programme', rating:4, s:'positive', tags:['Portion','Kids'], quote:'My two actually ate the whole thing, which never happens. Portions felt right for them.' },
+      { id:6, region:'yh', site:'Food bank', rating:3, s:'neutral', tags:['Variety'], quote:'Grateful for everything, just a lot of the same items each week. A bit more variety would help.' },
+      { id:7, region:'ldn', site:'Community kitchen', rating:5, s:'positive', tags:['Dietary','Care'], quote:'They had a halal option ready without me having to ask twice. Felt looked after.' },
+      { id:8, region:'nw', site:'Community café', rating:4, s:'positive', tags:['Freshness'], quote:'Bread was fresh that morning and the soup was excellent. Will come back.' },
+      { id:9, region:'gm', site:'Pantry', rating:2, s:'critical', tags:['Freshness','Produce'], quote:'Some of the salad was on the turn by the time I got it home. Everything else was great though.' },
+      { id:10, region:'wm', site:'Food bank', rating:4, s:'positive', tags:['Portion'], quote:'Generous amounts and it lasted us a few days. Thank you.' },
+      { id:11, region:'ldn', site:'Pantry', rating:5, s:'positive', tags:['Choice','Dignity'], quote:'Being able to pick my own items made a real difference. Felt like shopping, not a handout.' },
+      { id:12, region:'yh', site:'Community kitchen', rating:3, s:'neutral', tags:['Temperature','Taste'], quote:'Tasty but could be warmer. Seasoning was a little light for me.' },
+      { id:13, region:'nw', site:'School programme', rating:5, s:'positive', tags:['Kids','Healthy'], quote:'Good to see fruit included every day. The kids are getting used to it.' },
+      { id:14, region:'gm', site:'Community café', rating:4, s:'positive', tags:['Warmth','Care'], quote:'Friendly, no judgement, and the food was lovely. A warm place on a cold day.' },
+    ];
+  }
+
+  // ---------- aggregation ----------
+  current() {
+    const all = this.data();
+    if (this.state.region === 'all') {
+      const tot = all.reduce((a,r)=>a+r.responses,0);
+      const w = (sel)=> all.reduce((a,r)=>a+sel(r)*r.responses,0)/tot;
+      const keys = Object.keys(all[0].ratings);
+      const ratings = {}; keys.forEach(k=> ratings[k]= w(r=>r.ratings[k]));
+      const wkeys = Object.keys(all[0].waste);
+      const waste = {}; wkeys.forEach(k=> waste[k]= w(r=>r.waste[k]));
+      const trend = all[0].trend.map((_,i)=> w(r=>r.trend[i]));
+      return { name:'All regions', sites: all.reduce((a,r)=>a+r.sites,0), responses:tot,
+        satisfaction:w(r=>r.satisfaction), repeat:w(r=>r.repeat), wasteChange:w(r=>r.wasteChange),
+        ratings, waste, trend,
+        nutrition:{ balanced:w(r=>r.nutrition.balanced), fruitveg:w(r=>r.nutrition.fruitveg), salt:w(r=>r.nutrition.salt) } };
+    }
+    return all.find(r=>r.id===this.state.region);
+  }
+
+  fmt(n,d){ return Number(n).toFixed(d===undefined?1:d); }
+  fmtK(n){ return n>=1000 ? (n/1000).toFixed(n>=10000?0:1)+'k' : ''+Math.round(n); }
+
+  renderVals() {
+    const accent = this.props.accentColor ?? '#bf5a36';
+    const sage = '#6b7d5b', ochre = '#cc9544', clay = '#e7c9b4';
+    const c = this.current();
+    const range = Number(this.state.range);
+    const tab = this.state.tab;
+
+    // nav
+    const tabs = [
+      {id:'overview', label:'Overview', kicker:'Intelligence dashboard', title:'Community food, at a glance'},
+      {id:'quality', label:'Meal quality', kicker:'Quality analysis', title:'How the food is experienced'},
+      {id:'waste', label:'Waste & nutrition', kicker:'Sustainability', title:'Waste and nutritional trends'},
+      {id:'geography', label:'Geography', kicker:'Reach', title:'Geographic patterns'},
+      {id:'feedback', label:'Feedback', kicker:'Voice of the community', title:'Anonymous feedback stream'},
+      {id:'growth', label:'Growth', kicker:'Go-to-market', title:'Scaling & marketing intelligence'},
+    ];
+    const navItems = tabs.map(t=>({ label:t.label, onClick:()=>this.setState({tab:t.id}),
+      bg: t.id===tab ? 'rgba(231,221,203,.12)' : 'transparent',
+      fg: t.id===tab ? '#fff' : '#bcab90',
+      dot: t.id===tab ? accent : 'rgba(231,221,203,.25)' }));
+    const at = tabs.find(t=>t.id===tab);
+
+    // KPIs
+    const kpis = [
+      {label:'Overall satisfaction', value:this.fmt(c.satisfaction), unit:'/5', color:accent, sub:'mean of screened ratings'},
+      {label:'Responses collected', value:this.fmtK(c.responses), unit:'', color:'#261c14', sub:c.sites+' sites reporting'},
+      {label:'Avoidable waste', value:this.fmt(c.wasteChange,0)+'%', unit:'', color:sage, sub:'vs. same period last year'},
+      {label:'Repeat preference', value:this.fmt(c.repeat,0), unit:'%', color:ochre, sub:'would choose the meal again'},
+      {label:'Regions live', value: this.state.region==='all' ? '5' : '1', unit:'', color:'#261c14', sub:'in current view'},
+    ];
+
+    // trend
+    const tv = c.trend.slice(c.trend.length-range);
+    const qlabels = ['Q1 24','Q2 24','Q3 24','Q4 24','Q1 25','Q2 25'];
+    const tl = qlabels.slice(qlabels.length-range);
+    const W=640,H=210,padX=24,padTop=18,padBot=30,base=H-padBot;
+    const lo=3.6, hi=4.7;
+    const mapY=v=> padTop + (1-(v-lo)/(hi-lo))*(base-padTop);
+    const xAt=i=> tv.length===1 ? W/2 : padX + i*((W-padX*2)/(tv.length-1));
+    const pts = tv.map((v,i)=>`${xAt(i).toFixed(1)},${mapY(v).toFixed(1)}`).join(' ');
+    const area = `M ${xAt(0).toFixed(1)},${base} L ${pts.split(' ').join(' L ')} L ${xAt(tv.length-1).toFixed(1)},${base} Z`;
+    const dpct = ((tv[tv.length-1]-tv[0])/tv[0]*100);
+    const trend = { points:pts, area, labels:tl, delta:(dpct>=0?'+':'')+dpct.toFixed(1)+'%', deltaColor: dpct>=0?sage:accent };
+
+    // ratings
+    const rcolors=[accent,sage,ochre,accent,sage];
+    const rnotes={'Taste':'consistently the strongest driver of satisfaction','Freshness':'highest-rated dimension across the network','Portion size':'steady; a few sites report wanting more','Packaging':'lowest-rated — review suppliers and labelling','Meal temperature':'dips at sites serving over long windows'};
+    const ratings = Object.keys(c.ratings).map((k,i)=>({label:k, value:this.fmt(c.ratings[k]), pct:(c.ratings[k]/5*100).toFixed(0)+'%', color:rcolors[i%5], note:rnotes[k]||''}));
+    const sorted=[...ratings].sort((a,b)=>Number(b.value)-Number(a.value));
+    const quality={ best:sorted[0].label, bestNote:'Rated '+sorted[0].value+'/5 — protect what is working and feature it in funder reports.', worst:sorted[sorted.length-1].label, worstNote:'Rated '+sorted[sorted.length-1].value+'/5 — the clearest opportunity to lift overall satisfaction.' };
+
+    // waste
+    const wcolors=[accent,ochre,sage,clay,'#a8967c'];
+    const wsorted=Object.keys(c.waste).map(k=>({k,v:c.waste[k]})).sort((a,b)=>b.v-a.v);
+    const wmax=wsorted[0].v;
+    const waste = wsorted.map((w,i)=>({label:w.k, value:this.fmt(w.v,0), pct:(w.v/wmax*100).toFixed(0)+'%', color:wcolors[i%5]}));
+    const wasteInsight = `${wsorted[0].k} drive the most avoidable waste (${this.fmt(wsorted[0].v,0)}%). Smaller default portions and a take-home option are the fastest levers — sites that trialled both cut waste by a further 6 points.`;
+
+    // nutrition
+    const nutrition = [
+      {value:this.fmt(c.nutrition.balanced,0)+'%', label:'meals meeting balanced-plate criteria', color:sage},
+      {value:this.fmt(c.nutrition.fruitveg), label:'avg fruit & veg portions per meal', color:ochre},
+      {value:'+'+this.fmt(c.nutrition.salt,0)+'%', label:'more lower-salt options vs. last year', color:accent},
+    ];
+
+    // geography
+    const geography = this.data().map(r=>{
+      const active = this.state.region===r.id;
+      return { name:r.name, satisfaction:this.fmt(r.satisfaction), responses:this.fmtK(r.responses),
+        pct:(r.satisfaction/5*100).toFixed(0)+'%', color: r.satisfaction>=4.3?sage:(r.satisfaction>=4.1?ochre:accent),
+        bg: active ? '#f3e7df' : 'transparent', onClick:()=>this.setState({region:r.id}) };
+    });
+
+    // insights (derived)
+    const topRegion=[...this.data()].sort((a,b)=>b.satisfaction-a.satisfaction)[0];
+    const insights = [
+      {color:sage, title:trend.delta+' satisfaction this period', body:`${c.name} improved from ${this.fmt(tv[0])} to ${this.fmt(tv[tv.length-1])}/5 — gains track menu changes logged by sites.`},
+      {color:accent, title:sorted[sorted.length-1].label+' is the weak point', body:`Lowest-rated dimension at ${sorted[sorted.length-1].value}/5. Addressing it has the highest expected lift on overall satisfaction.`},
+      {color:ochre, title:'Waste down '+this.fmt(Math.abs(c.wasteChange),0)+'%', body:`Avoidable waste fell against last year while ${this.fmt(c.repeat,0)}% of guests would choose their meal again.`},
+      {color:sage, title:topRegion.name+' leads the network', body:`Highest satisfaction at ${this.fmt(topRegion.satisfaction)}/5 — a good source of practice to standardise across sites.`},
+    ];
+
+    // feedback
+    const scol={positive:sage, neutral:ochre, critical:accent};
+    const schip={positive:'#eef0e6', neutral:'#f6eed9', critical:'#f6e7df'};
+    const rname={gm:'Greater Manchester',nw:'North West',wm:'West Midlands',ldn:'Greater London',yh:'Yorkshire & Humber'};
+    let fb=this.feedbackData();
+    if(this.state.region!=='all') fb=fb.filter(f=>f.region===this.state.region);
+    const feedback = fb.map(f=>({ quote:f.quote, rating:f.rating, sentiment:f.s.charAt(0).toUpperCase()+f.s.slice(1),
+      color:scol[f.s], chipBg:schip[f.s], tags:f.tags, meta:`${f.site} · ${rname[f.region]} · anonymised`,
+      mini:f.quote }));
+    const feedbackTop = feedback.slice(0,3).map(f=>({quote:f.quote, color:f.color, meta:f.meta}));
+    const sc={positive:0,neutral:0,critical:0}; fb.forEach(f=>sc[f.s]++);
+    const tn=fb.length||1;
+    const sentimentSummary=[
+      {label:'Positive', color:sage, value:Math.round(sc.positive/tn*100), pct:Math.round(sc.positive/tn*100)+'%'},
+      {label:'Neutral', color:ochre, value:Math.round(sc.neutral/tn*100), pct:Math.round(sc.neutral/tn*100)+'%'},
+      {label:'Critical', color:accent, value:Math.round(sc.critical/tn*100), pct:Math.round(sc.critical/tn*100)+'%'},
+    ];
+
+    // growth
+    const showProj = this.props.showProjected ?? true;
+    let funnel = [
+      {name:'Pilot', sites:'3', responses:'620', detail:'1 charity · 1 provider · 1 community kitchen', pct:'40%', color:accent, fg:'#fff', proj:false},
+      {name:'City — Greater Manchester', sites:'34', responses:'4.8k', detail:'charities, councils, food banks, pantries, cafés', pct:'58%', color:'#c87a4f', fg:'#fff', proj:false},
+      {name:'Regional — North West', sites:'132', responses:'18.9k', detail:'benchmarking between organisations', pct:'74%', color:ochre, fg:'#2a1c08', proj:false},
+      {name:'National', sites:'480', responses:'62k', detail:'national dashboards · annual reports · subscription analytics', pct:'88%', color:sage, fg:'#fff', proj:true},
+      {name:'International', sites:'—', responses:'—', detail:'NGOs · humanitarian · food-recovery programmes', pct:'100%', color:'#9c8c76', fg:'#1c1610', proj:true},
+    ];
+    if(!showProj) funnel = funnel.filter(s=>!s.proj);
+
+    const channels=[
+      {name:'Pilot case studies', technique:'Documented outcomes from a few successful implementations', metric:'3.4×', metricLabel:'demo→pilot lift'},
+      {name:'Thought leadership', technique:'Public-health, local-gov & VCSE events; LinkedIn insight posts', metric:'42%', metricLabel:'of inbound leads'},
+      {name:'Partnership-led', technique:'Co-validation with charities, councils, universities, businesses', metric:'11', metricLabel:'active referral partners'},
+      {name:'Pilot-first growth', technique:'Prove value before expanding — credibility compounds', metric:'89%', metricLabel:'pilot→subscription'},
+    ];
+    const playbook=[
+      {num:'01', text:'Standardise collection (QR + paper) so every new site is plug-and-play.'},
+      {num:'02', text:'Auto-generate templated quarterly impact reports per organisation.'},
+      {num:'03', text:'Benchmarking creates network effects — each new org makes comparison more valuable.'},
+      {num:'04', text:'Land-and-expand: start with one site, grow to whole council areas.'},
+      {num:'05', text:'Anonymised aggregate datasets open research & enterprise revenue.'},
+    ];
+
+    return {
+      accent, orgName: this.props.orgName ?? 'Community Food Intelligence',
+      navItems,
+      regionOptions: this.data().map(r=>({id:r.id,name:r.name})),
+      activeRegion: this.state.region, activeRange: String(this.state.range),
+      onRegionChange: (e)=>this.setState({region:e.target.value}),
+      onRangeChange: (e)=>this.setState({range:Number(e.target.value)}),
+      activeTabKicker: at.kicker, activeTabTitle: at.title,
+      regionLabel: c.name, responsesLabel: this.fmtK(c.responses),
+      isOverview: tab==='overview', isQuality: tab==='quality', isWaste: tab==='waste',
+      isGeo: tab==='geography', isFeedback: tab==='feedback', isGrowth: tab==='growth',
+      kpis, trend, ratings, quality, waste, wasteInsight, nutrition, geography, insights,
+      feedback, feedbackTop, sentimentSummary, funnel, channels, playbook,
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Common Plate · Legal & Compliance Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600&family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#ece4d6;font-family:'Public Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;color:#261c14}
+input,select,button{font-family:'Public Sans',sans-serif}
+::placeholder{color:#a99c87}
+button{cursor:pointer}
+@keyframes cpRise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.wrap{max-width:1240px;margin:0 auto;padding:30px 26px 60px}
+.hd{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;padding-bottom:20px;border-bottom:1px solid rgba(38,28,20,.16)}
+.top{display:grid;grid-template-columns:340px 1fr;gap:18px;margin-top:24px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.kpi{display:flex;flex-direction:column;gap:8px;align-items:flex-start;padding:16px;border-radius:13px;text-align:left}
+.spot{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.spotcol{border-top:2px solid #bf5a36;padding-top:12px}
+.charity{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px}
+.controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:26px}
+.tab{display:inline-flex;align-items:center;gap:8px;padding:9px 15px;border-radius:999px;font:600 13px 'Public Sans',sans-serif}
+.list{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.card{background:#fff;border:1px solid rgba(38,28,20,.1);border-radius:13px;padding:18px 20px;display:flex;flex-direction:column;gap:13px}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-top:30px;padding-top:20px;border-top:1px solid rgba(38,28,20,.16)}
+@media(max-width:880px){.top{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}.spot{grid-template-columns:1fr 1fr}.charity{grid-template-columns:1fr}.list{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hd">
+<div style="display:flex;align-items:center;gap:12px">
+<div style="width:14px;height:14px;border-radius:50%;background:#bf5a36"></div>
+<div>
+<div style="font:800 19px 'Public Sans';letter-spacing:-.01em">Common Plate · Legal &amp; Compliance Hub</div>
+<div style="font:500 12.5px 'Public Sans';color:#6b5d4e;margin-top:2px">UK · limited company moving toward charity status — track every document &amp; its status</div>
+</div>
+</div>
+<span style="font:600 11px ui-monospace,monospace;color:#9c3d1c;background:#f6ddd1;padding:6px 12px;border-radius:999px;letter-spacing:.04em">ORGANISER · NOT LEGAL ADVICE</span>
+</div>
+
+<div class="top">
+<div style="background:#261c14;color:#f7f1e6;border-radius:16px;padding:26px 28px;display:flex;align-items:center;gap:22px">
+<div style="position:relative;width:128px;height:128px;flex:none">
+<svg width="128" height="128" viewBox="0 0 128 128">
+<circle cx="64" cy="64" r="54" fill="none" stroke="rgba(247,241,230,.15)" stroke-width="12"></circle>
+<circle id="ring" cx="64" cy="64" r="54" fill="none" stroke="#cc9544" stroke-width="12" stroke-linecap="round" stroke-dasharray="339.29" stroke-dashoffset="339.29" transform="rotate(-90 64 64)"></circle>
+</svg>
+<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+<span style="font:600 34px 'Newsreader',serif;color:#fff"><span id="scoreNum">0</span><span style="font-size:16px;color:#cbb89e">%</span></span>
+</div>
+</div>
+<div>
+<div style="font:500 11px 'Public Sans';letter-spacing:.16em;text-transform:uppercase;color:#cc9544;margin-bottom:7px">Compliance readiness</div>
+<div id="scoreLabel" style="font:600 16px 'Public Sans';line-height:1.3;margin-bottom:6px">—</div>
+<div style="font-size:12.5px;color:#cbb89e;line-height:1.5"><span id="total">0</span> documents tracked across 5 areas</div>
+</div>
+</div>
+<div class="kpis" id="kpis"></div>
+</div>
+
+<div style="background:#fdfaf3;border:1px solid rgba(191,90,54,.3);border-radius:16px;padding:26px 30px;margin-top:18px">
+<div style="display:flex;align-items:baseline;gap:12px;margin-bottom:8px">
+<span style="font-family:'Newsreader',serif;font-size:23px;font-weight:500;color:#bf5a36">Protecting your idea, website &amp; strategy</span>
+<span style="font:500 11px ui-monospace,monospace;color:#9c8c76">UK — PLAIN-ENGLISH GUIDE</span>
+</div>
+<p style="font-size:14px;line-height:1.6;color:#5b4f44;margin:0 0 18px;max-width:78ch">You can&rsquo;t copyright an idea itself — but you <strong style="color:#261c14">can</strong> protect how you express and run it. Here&rsquo;s what actually applies, and the related items are tracked in the list below.</p>
+<div class="spot">
+<div class="spotcol"><div style="font:700 13.5px 'Public Sans';margin-bottom:5px">Copyright — automatic</div><p style="font-size:12.5px;line-height:1.5;color:#5b4f44;margin:0">Your website, content, designs, code &amp; strategy docs are protected the moment they&rsquo;re recorded. Keep dated copies &amp; mark them ©.</p></div>
+<div class="spotcol"><div style="font:700 13.5px 'Public Sans';margin-bottom:5px">Trademark — register it</div><p style="font-size:12.5px;line-height:1.5;color:#5b4f44;margin:0">The name &amp; logo &ldquo;Common Plate&rdquo; aren&rsquo;t automatic. Register with the UK IPO (from ~£170) to own the brand.</p></div>
+<div class="spotcol"><div style="font:700 13.5px 'Public Sans';margin-bottom:5px">Assign IP to the company</div><p style="font-size:12.5px;line-height:1.5;color:#5b4f44;margin:0">Make sure founders &amp; contractors sign IP-assignment terms, so the company — not an individual — owns everything.</p></div>
+<div class="spotcol"><div style="font:700 13.5px 'Public Sans';margin-bottom:5px">Keep the strategy confidential</div><p style="font-size:12.5px;line-height:1.5;color:#5b4f44;margin:0">Use NDAs before sharing the plan. Your aggregated dataset may also carry UK database rights.</p></div>
+</div>
+</div>
+
+<div style="background:#f1ede0;border:1px solid rgba(38,28,20,.12);border-radius:16px;padding:22px 30px;margin-top:18px" class="charity">
+<div><div style="font:700 13.5px 'Public Sans';color:#4f5e42;margin-bottom:6px">Ltd → charity: decide the route</div><p style="font-size:12.5px;line-height:1.5;color:#5b4f44;margin:0">A charity, a CIO, or a CIC are different structures with different rules. Pick one before registering — it shapes governance &amp; tax.</p></div>
+<div><div style="font:700 13.5px 'Public Sans';color:#4f5e42;margin-bottom:6px">Charity Commission</div><p style="font-size:12.5px;line-height:1.5;color:#5b4f44;margin:0">Register once income &amp; structure qualify. You&rsquo;ll need charitable objects, trustees, and a governing document.</p></div>
+<div><div style="font:700 13.5px 'Public Sans';color:#4f5e42;margin-bottom:6px">Tax follows structure</div><p style="font-size:12.5px;line-height:1.5;color:#5b4f44;margin:0">Charitable status changes Corporation Tax, VAT &amp; Gift Aid treatment — worth modelling before you switch.</p></div>
+</div>
+
+<div class="controls">
+<div id="tabs" style="display:flex;gap:10px;flex-wrap:wrap"></div>
+<div style="flex:1"></div>
+<input id="search" type="text" placeholder="Search documents…" style="width:200px;padding:10px 14px;border:1px solid rgba(38,28,20,.18);border-radius:999px;font:500 13px 'Public Sans';background:#fff;color:#261c14;outline:none">
+<button id="addBtn" style="background:#bf5a36;color:#fff;border:none;font:700 13px 'Public Sans';padding:11px 18px;border-radius:999px">+ Add document</button>
+</div>
+
+<div id="addForm" style="display:none;background:#fff;border:1px solid rgba(38,28,20,.14);border-radius:14px;padding:20px 22px;margin-top:14px;animation:cpRise .3s ease both">
+<div style="display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:12px;margin-bottom:12px">
+<input id="f_name" type="text" placeholder="Document name" style="padding:11px 14px;border:1px solid rgba(38,28,20,.18);border-radius:9px;font:500 13.5px 'Public Sans';background:#fdfaf3;outline:none">
+<select id="f_cat" style="padding:11px 14px;border:1px solid rgba(38,28,20,.18);border-radius:9px;font:500 13.5px 'Public Sans';background:#fdfaf3;outline:none">
+<option>Data &amp; GDPR</option><option selected>IP &amp; Copyright</option><option>Anonymity &amp; Safeguarding</option><option>Contracts &amp; ToS</option><option>Corporate &amp; Charity</option>
+</select>
+<input id="f_owner" type="text" placeholder="Owner (optional)" style="padding:11px 14px;border:1px solid rgba(38,28,20,.18);border-radius:9px;font:500 13.5px 'Public Sans';background:#fdfaf3;outline:none">
+</div>
+<input id="f_note" type="text" placeholder="Note (optional)" style="width:100%;padding:11px 14px;border:1px solid rgba(38,28,20,.18);border-radius:9px;font:500 13.5px 'Public Sans';background:#fdfaf3;outline:none;margin-bottom:12px">
+<div style="display:flex;gap:10px;justify-content:flex-end">
+<button id="f_cancel" style="background:transparent;color:#6b5d4e;border:1px solid rgba(38,28,20,.2);font:600 13px 'Public Sans';padding:10px 18px;border-radius:8px">Cancel</button>
+<button id="f_save" style="background:#261c14;color:#f7f1e6;border:none;font:700 13px 'Public Sans';padding:10px 20px;border-radius:8px">Save document</button>
+</div>
+</div>
+
+<div id="listCaption" style="font:500 12px 'Public Sans';color:#6b5d4e;margin:24px 0 12px"></div>
+<div class="list" id="list"></div>
+<div id="emptyState" style="display:none;text-align:center;padding:54px 20px;color:#8a7a64;font-size:14px">No documents match this view. Try another category or clear the search.</div>
+
+<div class="foot">
+<p style="font-size:11.5px;line-height:1.6;color:#9c8c76;margin:0;max-width:74ch">This hub helps you organise and track documents. It is not legal advice — confirm specifics with a qualified UK solicitor or accountant. Changes are saved in this browser only.</p>
+<button id="reset" style="background:transparent;border:1px solid rgba(38,28,20,.2);color:#6b5d4e;font:600 12px 'Public Sans';padding:9px 16px;border-radius:8px;white-space:nowrap">Reset to defaults</button>
+</div>
+
+</div>
+
+<script>
+(function(){
+  var STORE='cp_legal_hub_v1';
+  var STATUSES=['Action needed','Draft','In progress','In place'];
+  var CATS=['Data & GDPR','IP & Copyright','Anonymity & Safeguarding','Contracts & ToS','Corporate & Charity'];
+
+  function seed(){
+    function d(cat,name,status,priority,review,note){return {id:'s'+Math.random().toString(36).slice(2,8),cat:cat,name:name,status:status,priority:priority,review:review,note:note};}
+    return [
+      d('Data & GDPR','Website privacy policy','Action needed','High','2026-09-30','Public notice covering analytics, contact forms & cookies.'),
+      d('Data & GDPR','Internal data protection policy','Draft','High','2026-10-31','How staff handle personal data day-to-day.'),
+      d('Data & GDPR','ICO data protection fee registration','Action needed','High','2026-08-15','UK orgs processing personal data must register & pay the annual fee.'),
+      d('Data & GDPR','Data processing agreement (partner template)','In progress','Medium','2026-09-30','Signed with each partner that shares data with us.'),
+      d('Data & GDPR','Data retention & anonymisation policy','In progress','High','2026-09-15','Core to the anonymous-by-default promise.'),
+      d('IP & Copyright','Copyright register — website & UI content','In place','Medium','2027-01-31','Copyright is automatic in the UK; keep dated records & © marks.'),
+      d('IP & Copyright','Copyright register — strategy & methodology','In progress','High','2026-09-30','Date-stamp and archive every version of the strategy docs.'),
+      d('IP & Copyright','Trademark — "Common Plate" (UK IPO)','Action needed','High','2026-08-31','Register the name & logo to own the brand.'),
+      d('IP & Copyright','Trademark — "Community Food Intelligence"','Action needed','Medium','2026-10-31','Secondary mark — consider once the primary is filed.'),
+      d('IP & Copyright','IP assignment agreements (founders & contractors)','Action needed','High','2026-08-31','Critical: ensure the company, not individuals, owns all IP.'),
+      d('IP & Copyright','Database rights — aggregated feedback dataset','Draft','Medium','2026-11-30','UK database right may protect the curated dataset.'),
+      d('Anonymity & Safeguarding','Anonymisation & aggregation thresholds policy','In progress','High','2026-09-15','Minimum counts before any insight is published.'),
+      d('Anonymity & Safeguarding','Safeguarding policy (vulnerable participants)','Action needed','High','2026-09-30','Protects people who give feedback in vulnerable settings.'),
+      d('Anonymity & Safeguarding','Content moderation / toxicity screening policy','Draft','Medium','2026-10-15','Screen free-text before anything is surfaced.'),
+      d('Anonymity & Safeguarding','Participant fair-processing & consent notice','Action needed','High','2026-09-30','What participants are told before giving feedback.'),
+      d('Contracts & ToS','Website terms of service','Action needed','Medium','2026-09-30','Rules for using the public site.'),
+      d('Contracts & ToS','Partner / customer master agreement','Draft','High','2026-10-31','The core commercial contract with organisations.'),
+      d('Contracts & ToS','Data sharing agreement template','Action needed','Medium','2026-10-15','For partners exchanging data with us.'),
+      d('Contracts & ToS','SaaS subscription terms','Draft','Medium','2026-11-15','Subscription, billing & service terms.'),
+      d('Corporate & Charity','Certificate of incorporation (Ltd)','In place','Low','','Companies House registration.'),
+      d('Corporate & Charity','Articles of association','In place','Low','2027-03-31','Update before any charity conversion.'),
+      d('Corporate & Charity','Charity structure decision (charity / CIO / CIC)','Action needed','High','2026-09-30','Choose the route before registering.'),
+      d('Corporate & Charity','Charity Commission registration','Action needed','High','2026-12-31','Once objects, trustees & income qualify.'),
+      d('Corporate & Charity','Board & governance / trustee policy','Draft','Medium','2026-11-30','Governance framework for the future charity.')
+    ];
+  }
+
+  var S={docs:seed(),activeCat:'All',activeStatus:null,query:'',adding:false};
+  try{var raw=localStorage.getItem(STORE);if(raw){var p=JSON.parse(raw);if(Array.isArray(p)&&p.length)S.docs=p;}}catch(e){}
+  function persist(){try{localStorage.setItem(STORE,JSON.stringify(S.docs));}catch(e){}}
+
+  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  function sv(s){if(s==='In place')return{bg:'#e7efe0',fg:'#3f5233',dot:'#6b7d5b'};if(s==='In progress')return{bg:'#f7ecd2',fg:'#8a6516',dot:'#cc9544'};if(s==='Draft')return{bg:'#efe6d4',fg:'#6b5d4e',dot:'#9c8c76'};return{bg:'#f6ddd1',fg:'#9c3d1c',dot:'#bf5a36'};}
+  function cc(c){return ({'Data & GDPR':'#6b7d5b','IP & Copyright':'#bf5a36','Anonymity & Safeguarding':'#cc9544','Contracts & ToS':'#4f5e42','Corporate & Charity':'#9c8c76'})[c]||'#9c8c76';}
+  function pc(p){return p==='High'?'#bf5a36':p==='Medium'?'#cc9544':'#9c8c76';}
+  function cnt(s){return S.docs.filter(function(d){return d.status===s;}).length;}
+
+  var $=function(id){return document.getElementById(id);};
+
+  function renderScore(){
+    var w={'In place':1,'In progress':0.5,'Draft':0.25,'Action needed':0};
+    var score=S.docs.length?Math.round(S.docs.reduce(function(a,d){return a+(w[d.status]||0);},0)/S.docs.length*100):0;
+    var C=2*Math.PI*54;
+    $('ring').setAttribute('stroke-dashoffset',(C*(1-score/100)).toFixed(2));
+    $('scoreNum').textContent=score;
+    $('scoreLabel').textContent=score<40?'Early — lots to put in place':score<70?'Building — key gaps remain':'Strong coverage';
+    $('total').textContent=S.docs.length;
+  }
+
+  function renderKpis(){
+    $('kpis').innerHTML=STATUSES.slice().reverse().map(function(st){
+      var v=sv(st),active=S.activeStatus===st;
+      return '<button class="kpi" data-status="'+esc(st)+'" style="background:'+(active?v.bg:'#fdfaf3')+';border:1px solid '+(active?v.dot:'rgba(38,28,20,.1)')+'">'+
+        '<span style="font:600 30px \'Newsreader\',serif;color:'+v.dot+';line-height:1">'+cnt(st)+'</span>'+
+        '<span style="font:600 12.5px \'Public Sans\';line-height:1.25">'+esc(st)+'</span></button>';
+    }).join('');
+  }
+
+  function renderTabs(){
+    var labels=['All'].concat(CATS);
+    $('tabs').innerHTML=labels.map(function(l){
+      var active=S.activeCat===l,col=l==='All'?'#bf5a36':cc(l);
+      var count=l==='All'?S.docs.length:S.docs.filter(function(d){return d.cat===l;}).length;
+      var style='class="tab" data-cat="'+esc(l)+'" style="'+(active?'background:#261c14;color:#f7f1e6;border:1px solid #261c14':'background:#fff;color:#3a2d22;border:1px solid rgba(38,28,20,.14)')+'"';
+      return '<button '+style+'><span style="width:7px;height:7px;border-radius:50%;background:'+col+';flex:none"></span>'+esc(l)+' <span style="opacity:.6;font-weight:600">'+count+'</span></button>';
+    }).join('');
+  }
+
+  function visible(){
+    var q=S.query.trim().toLowerCase();
+    return S.docs.filter(function(d){
+      if(S.activeCat!=='All'&&d.cat!==S.activeCat)return false;
+      if(S.activeStatus&&d.status!==S.activeStatus)return false;
+      if(q&&(d.name+' '+d.note+' '+d.owner).toLowerCase().indexOf(q)<0)return false;
+      return true;
+    });
+  }
+
+  function renderList(){
+    var docs=visible();
+    $('listCaption').textContent='Showing '+(S.activeCat==='All'?'all areas':S.activeCat)+(S.activeStatus?' · '+S.activeStatus:'')+' · tap a status pill to advance it';
+    $('emptyState').style.display=docs.length?'none':'block';
+    $('list').innerHTML=docs.map(function(d){
+      var v=sv(d.status),col=cc(d.cat),pcol=pc(d.priority);
+      return '<div class="card">'+
+        '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">'+
+          '<div style="display:flex;flex-direction:column;gap:8px;min-width:0">'+
+            '<span style="align-self:flex-start;display:inline-block;font:600 10px ui-monospace,monospace;letter-spacing:.05em;text-transform:uppercase;color:'+col+';border:1px solid '+col+'55;background:'+col+'12;padding:3px 8px;border-radius:5px">'+esc(d.cat)+'</span>'+
+            '<span style="font:600 15px \'Public Sans\';color:#261c14;line-height:1.3">'+esc(d.name)+'</span>'+
+          '</div>'+
+          '<button data-act="cycle" data-id="'+d.id+'" style="display:inline-flex;align-items:center;gap:7px;background:'+v.bg+';color:'+v.fg+';font:600 12px \'Public Sans\';padding:7px 13px;border-radius:999px;border:none;white-space:nowrap;flex:none"><span style="width:7px;height:7px;border-radius:50%;background:'+v.dot+'"></span>'+esc(d.status)+'</button>'+
+        '</div>'+
+        (d.note?'<p style="font-size:13px;line-height:1.5;color:#6b5d4e;margin:0">'+esc(d.note)+'</p>':'')+
+        '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;border-top:1px solid rgba(38,28,20,.08);padding-top:12px;flex-wrap:wrap">'+
+          '<div style="display:flex;align-items:center;gap:14px">'+
+            '<span style="font:600 11.5px \'Public Sans\';color:'+pcol+'">'+esc(d.priority)+' priority</span>'+
+            '<span style="font:500 12.5px \'Public Sans\';color:#8a7a64">'+esc(d.owner||'Unassigned')+'</span>'+
+          '</div>'+
+          '<div style="display:flex;align-items:center;gap:12px">'+
+            '<label style="display:flex;align-items:center;gap:7px;font:500 11.5px \'Public Sans\';color:#8a7a64">Review<input type="date" data-act="date" data-id="'+d.id+'" value="'+esc(d.review||'')+'" style="border:1px solid rgba(38,28,20,.16);border-radius:7px;padding:5px 8px;font-size:12px;color:#261c14;background:#fdfaf3;outline:none"></label>'+
+            '<button data-act="del" data-id="'+d.id+'" style="background:transparent;border:none;color:#bf8a78;font:600 12px \'Public Sans\'">Remove</button>'+
+          '</div>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+  }
+
+  function renderDynamic(){renderScore();renderKpis();renderTabs();renderList();}
+
+  // events
+  $('tabs').addEventListener('click',function(e){var b=e.target.closest('[data-cat]');if(!b)return;S.activeCat=b.getAttribute('data-cat');renderTabs();renderList();});
+  $('kpis').addEventListener('click',function(e){var b=e.target.closest('[data-status]');if(!b)return;var st=b.getAttribute('data-status');S.activeStatus=S.activeStatus===st?null:st;renderKpis();renderList();});
+  $('list').addEventListener('click',function(e){
+    var b=e.target.closest('[data-act]');if(!b)return;var act=b.getAttribute('data-act'),id=b.getAttribute('data-id');
+    if(act==='cycle'){S.docs=S.docs.map(function(d){if(d.id!==id)return d;var i=STATUSES.indexOf(d.status);d.status=STATUSES[(i+1)%STATUSES.length];return d;});persist();renderDynamic();}
+    else if(act==='del'){S.docs=S.docs.filter(function(d){return d.id!==id;});persist();renderDynamic();}
+  });
+  $('list').addEventListener('change',function(e){var b=e.target.closest('[data-act="date"]');if(!b)return;var id=b.getAttribute('data-id');S.docs=S.docs.map(function(d){if(d.id===id)d.review=b.value;return d;});persist();});
+  $('search').addEventListener('input',function(e){S.query=e.target.value;renderList();});
+  $('addBtn').addEventListener('click',function(){S.adding=!S.adding;$('addForm').style.display=S.adding?'block':'none';if(S.adding)$('f_name').focus();});
+  $('f_cancel').addEventListener('click',function(){S.adding=false;$('addForm').style.display='none';});
+  $('f_save').addEventListener('click',function(){
+    var name=$('f_name').value.trim();if(!name)return $('f_name').focus();
+    S.docs.unshift({id:'u'+Date.now(),cat:$('f_cat').value,name:name,owner:$('f_owner').value.trim(),status:'Action needed',priority:'Medium',review:'',note:$('f_note').value.trim()});
+    persist();$('f_name').value='';$('f_owner').value='';$('f_note').value='';S.adding=false;$('addForm').style.display='none';renderDynamic();
+  });
+  $('reset').addEventListener('click',function(){if(!window.confirm('Reset all documents to the defaults? Your changes will be lost.'))return;S.docs=seed();S.activeCat='All';S.activeStatus=null;S.query='';$('search').value='';persist();renderDynamic();});
+
+  renderDynamic();
+})();
+</script>
+</body>
+</html>
